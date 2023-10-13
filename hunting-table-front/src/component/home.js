@@ -1,5 +1,9 @@
+import "./../scss/home.css";
 const Home = () => {
-    return <h1>Home</h1>;
+    return (
+            <img src="./../../src/assets/chasseur.jpg" alt="imageDeChasseur"/>
+
+    );
   };
   
   export default Home;

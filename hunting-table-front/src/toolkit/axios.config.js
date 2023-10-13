@@ -1,6 +1,6 @@
 const api = (method, path) => {
     const config = {
-      baseUrl: "https://pokeapi.co/api/v2/",
+      baseUrl: "https://api.sunrise-sunset.org/json?lat=45.750000&lng=-4.850000",
       path: path,
       token: null,
     };

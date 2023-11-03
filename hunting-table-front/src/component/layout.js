@@ -9,9 +9,11 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
+import PublicIcon from '@mui/icons-material/Public';
 import { Link } from 'react-router-dom';
 
-const pages = ['Board', 'Login', 'Register', 'Exo'];
+const pages = ['Tableau de bord', 'Connexion', 'Inscription', 'Historique des chasses', 'Nouvelle Chasse', 'Exo'];
+const pagesLinks = ['board', 'login', 'register', 'history', 'new-hunt', 'Exo'];
 
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -28,6 +30,7 @@ function ResponsiveAppBar() {
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
+        <PublicIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
           <Typography
             variant="h6"
             noWrap
@@ -43,7 +46,7 @@ function ResponsiveAppBar() {
               textDecoration: 'none',
             }}
           >
-            🐗 Hunting-Table
+            Hunting-Table
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -75,13 +78,14 @@ function ResponsiveAppBar() {
                 display: { xs: 'block', md: 'none' },
               }}
             >
-              {pages.map((page) => (
+              {pages.map((page, index) => (
                 <MenuItem key={page} onClick={handleCloseNavMenu}>
                   <Typography textAlign="center">
-                    <Link style={{textDecoration: "none", color: "white"}} to={`/${page}`}>{page}</Link>
+                    <Link style={{textDecoration: "none", color: "white"}} to={`/${pagesLinks[index]}`}>{page}</Link>
                   </Typography>
                 </MenuItem>
-              ))}
+            ))}
+
             </Menu>
           </Box>
           <Typography
@@ -103,13 +107,13 @@ function ResponsiveAppBar() {
             Hunting-Table
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
+            {pages.map((page, index) => (
               <Button
                 key={page}
                 onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
-                <Link style={{textDecoration: "none", color: "white"}} to={`/${page}`}>{page}</Link>
+                <Link style={{textDecoration: "none", color: "white"}} to={`/${pagesLinks[index]}`}>{page}</Link>
               </Button>
             ))}
           </Box>

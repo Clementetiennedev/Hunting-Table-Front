@@ -4,6 +4,8 @@ import Login from "./component/login"
 import Register from "./component/register"
 import Exo from "./component/exo"
 import Weather from "./component/weather"
+import History from "./component/history"
+import NewHunt from "./component/new-hunt"
 import './App.css';
 import ResponsiveAppBar from './component/layout';
 import { Route, Routes } from 'react-router';
@@ -20,6 +22,8 @@ function App() {
                 <Route path="Board" element={<Board />} />
                 <Route path="Login" element={<Login />} />
                 <Route path="Register" element={<Register />} />
+                <Route path="History" element={<History />} />
+                <Route path="New-hunt" element={<NewHunt />} />
                 <Route path="Exo" element={<Weather />} />
             </Routes>
         </div>

@@ -1,4 +1,3 @@
-import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -11,9 +10,15 @@ import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import PublicIcon from '@mui/icons-material/Public';
 import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import HuntingTableService from '../service/HuntingTableService';
+// import { useNavigate } from 'react-router';
 
-const pages = ['Tableau de bord', 'Connexion', 'Inscription', 'Historique des chasses', 'Nouvelle Chasse', 'Exo'];
-const pagesLinks = ['board', 'login', 'register', 'history', 'new-hunt', 'Exo'];
+const pages = ['Société', 'Historique des chasses', 'Nouvelle Chasse' ];
+const pagesLinks = ['society', 'history', 'new-hunt', 'login', 'register'];
+const pagesNotLog = [ 'Connexion', 'Inscription' ];
+const pagesLinksNotLog = [ 'login', 'register'];
+// const navigate = useNavigate();
 
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -26,8 +31,33 @@ function ResponsiveAppBar() {
     setAnchorElNav(null);
   };
 
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsAuthenticated(!!token);
+  }, []); 
+
+  const handleLogout = () => {
+
+    HuntingTableService.logout()
+    .then((response) => {
+      if (response.status === 200) {
+        localStorage.removeItem('token');
+        setIsAuthenticated(false);
+        //navigate('/')
+        window.location.reload(); 
+      } else {
+        console.log('Erreur lors de la déconnexion');
+      }
+    })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   return (
-    <AppBar position="static">
+    <AppBar position="fixed">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
         <PublicIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
@@ -78,15 +108,30 @@ function ResponsiveAppBar() {
                 display: { xs: 'block', md: 'none' },
               }}
             >
-              {pages.map((page, index) => (
+              {isAuthenticated ? (
+              pages.map((page, index) => (
                 <MenuItem key={page} onClick={handleCloseNavMenu}>
                   <Typography textAlign="center">
-                    <Link style={{textDecoration: "none", color: "white"}} to={`/${pagesLinks[index]}`}>{page}</Link>
+                    <Link style={{ textDecoration: "none", color: "white" }} to={`/${pagesLinks[index]}`}>{page}</Link>
                   </Typography>
                 </MenuItem>
-            ))}
-
-            </Menu>
+              )),
+              <Button
+              onClick={handleLogout}
+              sx={{ my: 2, color: 'white', display: 'block' }}
+            >
+              Logout
+            </Button>
+            ) : (
+              pagesNotLog.map((page, index) => (
+                <MenuItem key={page} onClick={handleCloseNavMenu}>
+                  <Typography textAlign="center">
+                    <Link style={{ textDecoration: "none", color: "white" }} to={`/${pagesLinksNotLog[index]}`}>{page}</Link>
+                  </Typography>
+                </MenuItem>
+              ))
+            )}
+          </Menu>
           </Box>
           <Typography
             variant="h5"
@@ -107,15 +152,35 @@ function ResponsiveAppBar() {
             Hunting-Table
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+          {isAuthenticated ? (
+          <>
             {pages.map((page, index) => (
               <Button
                 key={page}
                 onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
-                <Link style={{textDecoration: "none", color: "white"}} to={`/${pagesLinks[index]}`}>{page}</Link>
+                <Link style={{ textDecoration: "none", color: "white" }} to={`/${pagesLinks[index]}`}>{page}</Link>
               </Button>
             ))}
+            <Button
+              onClick={handleLogout}
+              sx={{ my: 2, color: 'white', display: 'block' }}
+            >
+              Logout
+            </Button>
+          </>
+            ) : (
+              pagesNotLog.map((page, index) => (
+                <Button
+                  key={page}
+                  onClick={handleCloseNavMenu}
+                  sx={{ my: 2, color: 'white', display: 'block' }}
+                >
+                  <Link style={{ textDecoration: "none", color: "white" }} to={`/${pagesLinksNotLog[index]}`}>{page}</Link>
+                </Button>
+              ))
+            )}
           </Box>
         </Toolbar>
       </Container>

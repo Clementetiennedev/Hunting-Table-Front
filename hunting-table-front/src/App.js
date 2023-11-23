@@ -1,32 +1,53 @@
-import Home from "./component/home"
-import Board from "./component/board"
-import Login from "./component/login"
-import Register from "./component/register"
-import Exo from "./component/exo"
-import Weather from "./component/weather"
-import History from "./component/history"
-import NewHunt from "./component/new-hunt"
-import './App.css';
-import ResponsiveAppBar from './component/layout';
-import { Route, Routes } from 'react-router';
+import React, { useState, useEffect } from 'react';
+import { Route, Routes, Navigate } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from './theme';
+import ResponsiveAppBar from './component/layout';
+import Home from './component/home';
+import Society from './component/Society/index';
+import SocietyView from './component/Society/view';
+import Login from './component/login';
+import Register from './component/register';
+import History from './component/History/index';
+import HistoryView from './component/History/view';
+import NewHunt from './component/new-hunt';
+import './App.css';
 
 function App() {
-    return (
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsAuthenticated(!!token);
+  }, []);
+
+  return (
     <ThemeProvider theme={theme}>
-        <div className="App">
-            <ResponsiveAppBar />
-            <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="Board" element={<Board />} />
-                <Route path="Login" element={<Login />} />
-                <Route path="Register" element={<Register />} />
-                <Route path="History" element={<History />} />
-                <Route path="New-hunt" element={<NewHunt />} />
-                <Route path="Exo" element={<Weather />} />
-            </Routes>
-        </div>
+      <div className="App">
+        <ResponsiveAppBar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          {isAuthenticated ? (
+            <>
+              <Route path="Society" element={<Society />} />
+              <Route path="Society/:id" element={<SocietyView />} />
+              <Route path="History" element={<History />} />
+              <Route path="History/:id" element={<HistoryView />} />
+              <Route path="New-hunt" element={<NewHunt />} />
+            </>
+          ) : (
+            <>
+              <Route path="Login" element={<Login />} />
+              <Route path="Register" element={<Register />} />
+              {/* Redirect to Home if not authenticated */}
+              <Route
+                path="*"
+                element={<Navigate to="/" replace />}
+              />
+            </>
+          )}
+        </Routes>
+      </div>
     </ThemeProvider>
   );
 }

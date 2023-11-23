@@ -2,10 +2,30 @@ import React, { useState } from 'react';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import HuntingTableService from '../service/HuntingTableService';
+import { useNavigate } from 'react-router';
 
 const Login = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
+
+  const login = (event) => {
+    event.preventDefault();
+    HuntingTableService.login({ email, password })
+    .then((response) => {
+      if (response.status === 200) {
+        localStorage.setItem('token', response['token']);
+        navigate('/')
+        window.location.reload(); 
+      } else {
+        console.log('Erreur lors de l\'enregistrement du compte');
+      }
+    })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
@@ -34,7 +54,7 @@ const Login = () => {
           onChange={e => setPassword(e.target.value)}
           required
         />
-        <Button variant="contained" type="submit" style={{backgroundColor: '#8D664C'}}>
+        <Button variant="contained" type="submit" onClick={login} style={{backgroundColor: '#8D664C'}}>
           Login
         </Button>
       </Stack>

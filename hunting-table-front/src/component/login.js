@@ -13,22 +13,22 @@ const Login = () => {
   const login = (event) => {
     event.preventDefault();
     HuntingTableService.login({ email, password })
-    .then((response) => {
-      if (response.status === 200) {
-        localStorage.setItem('token', response['token']);
-        navigate('/')
-        window.location.reload(); 
-      } else {
-        console.log('Erreur lors de l\'enregistrement du compte');
-      }
-    })
+      .then((response) => {
+        if (response.status === 200) {
+          localStorage.setItem('token', response.data.access_token);
+          console.log('Token après la connexion:', response.data.access_token);
+          navigate('/history');
+        } else {
+          console.log('Erreur lors de l\'enregistrement du compte');
+        }
+      })
       .catch((error) => {
         console.log(error);
       });
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+    <div style={{ marginTop: '8%', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
       <Stack
         component="form"
         sx={{
@@ -39,7 +39,7 @@ const Login = () => {
         noValidate
         autoComplete="off"
       >
-        <h2>Login</h2>
+        <h2>Connexion</h2>
         <TextField
           id="outlined-email-input"
           label="Email"
@@ -49,7 +49,7 @@ const Login = () => {
         />
         <TextField
           id="outlined-password-input"
-          label="Password"
+          label="Mot de passe"
           type="password"
           onChange={e => setPassword(e.target.value)}
           required

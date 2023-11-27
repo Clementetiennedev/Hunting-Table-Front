@@ -31,6 +31,7 @@ const DEFAULT_STATE = {
     availableSocieties: [],
     id: '',
     name: '',
+    dept: '',
 };
 
 class Societe extends React.Component {
@@ -57,6 +58,10 @@ class Societe extends React.Component {
 
     updateName = (model) => {
         this.setState({name: model.target.value});
+    }
+
+    updateDept = (model) => {
+        this.setState({dept: model.target.value});
     }
 
     updateData = () => {
@@ -96,6 +101,7 @@ class Societe extends React.Component {
                     <h2 style={{
                         width: '1300px',
                         textAlign: 'center',
+                        marginTop: '8%',
                     }}>Recherche de société</h2>
                 </div>
                     <FormControl sx={{my: 1, mx: 0.5, width: 325}}>
@@ -123,8 +129,8 @@ class Societe extends React.Component {
                           id="outlined-search"
                           label="Département"
                           type="search"
-                          value={this.state.name}
-                          onChange={this.updateName}
+                          value={this.state.dept}
+                          onChange={this.updateDept}
                           />
                     </FormControl>
 

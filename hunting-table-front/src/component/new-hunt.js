@@ -1,52 +1,93 @@
 import React, { useState } from 'react';
-import Stack from '@mui/material/Stack';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
-import {DataGrid} from '@mui/x-data-grid';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Stack from '@mui/material/Stack';
+import HuntingTableService from '../service/HuntingTableService';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, TextField, Button } from '@mui/material';
+
+const DEFAULT_STATE = {
+  animal: '',
+  number: '',
+  rows: [],
+  limit: 10,
+  page: 0,
+};
 
 const NewHunt = () => {
+  const [state, setState] = useState(DEFAULT_STATE);
   const [title, setTitle] = useState();
   const [date, setDate] = useState();
-  const [society, setSociety] = useState();
-  const [participant, setParticipant] = useState();
   const [description, setDescription] = useState();
-  const [specie, setSpecie] = useState();
-  const [number, setNumber] = useState();
-  const [rows, setRows] = useState([]);
 
   const addToRows = () => {
-    const newRow = {
-      id: generateUniqueId(),
-      species: specie,
-      number: number,
-    };
+    const isSpeciesExists = state.rows.some((row) => row.animal === state.animal);
+  
+    if (!isSpeciesExists && state.animal) {
+      const newRow = {
+        id: state.animal,
+        animal: state.animal,
+        number: state.number,
+      };
+  
+      setState((prev) => ({
+        ...prev,
+        rows: [...prev.rows, newRow],
+        animal: '',
+        number: '',
+      }));
+    }
+  };
+  
+const handleDeleteRow = (animal) => {
+  console.log('Deleting row with species:', animal);
+  const updatedRows = state.rows.filter((row) => row.animal !== animal);
+  console.log('Updated rows:', updatedRows);
+  setState((prev) => ({ ...prev, rows: updatedRows }));
+};
 
-    setRows([...rows, newRow]);
-    console.log(rows)
+  const handleChangePage = (event, newPage) => {
+    setState((prev) => ({ ...prev, page: newPage }));
   };
 
-  const generateUniqueId = () => {
-    return Math.random().toString(36).substr(2, 9);
+  const handleChangeRowsPerPage = (event) => {
+    const newLimit = parseInt(event.target.value, 10);
+    setState((prev) => ({ ...prev, limit: newLimit, page: 0 }));
   };
 
-  const handleDeleteRow = (id) => {
-    const updatedRows = rows.filter(row => row.id !== id);
-    setRows(updatedRows);
+  const post = async (event) => {
+    event.preventDefault();
+  
+    try {
+      const response = await  HuntingTableService.poststore(
+        title,
+        date,
+        description,
+        state.rows
+      );
+    } catch (error) {
+      console.error("Erreur lors de la requête", error);
+    }
   };
-
 
   const columns = [
-    {field: 'species', headerName: 'Espèce chassé', sortable: false, flex: 1},
-    {field: 'number', headerName: 'Nombre d\'animal prélevé', sortable: false, flex: 1},
-    {field: 'details', headerName: 'Supprimer', sortable: false, renderCell: (params) => (
-        <IconButton onClick={() => handleDeleteRow(params.row.id)}>
+    { field: 'animal', headerName: 'Espèce chassée', flex: 1 },
+    { field: 'number', headerName: 'Nombre d\'animaux prélevés', flex: 1 },
+    {
+      field: 'details',
+      headerName: 'Supprimer',
+      sortable: false,
+      renderCell: (params) => {
+        console.log('Rendering cell for row:', params.row);
+        return (
+          <IconButton onClick={() => handleDeleteRow(params.row && params.row.animal)}>
           <DeleteIcon />
         </IconButton>
-      ),
+        );
+      },
+      
     },
   ];
+  
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -56,54 +97,37 @@ const NewHunt = () => {
           width: '1300px',
           textAlign: 'center',
         }}
-        spacing={{ xs: 1, sm: 2 }} direction="row" useFlexGap flexWrap="wrap"
+        spacing={{ xs: 1, sm: 2 }}
+        direction="row"
+        useFlexGap
+        flexWrap="wrap"
         noValidate
         autoComplete="off"
       >
-        <div>       
+        <div>
           <h2 style={{
-          width: '1300px',
-          textAlign: 'center',
-        }}>Nouvelle chasse</h2>
+            width: '1300px',
+            textAlign: 'center',
+            marginTop: '8%',
+          }}>Nouvelle chasse</h2>
         </div>
         <TextField
           id="outlined-title-input"
           label="Titre"
           type="text"
           sx={{
-            width: '640px'
+            width: '640px',
           }}
           onChange={e => setTitle(e.target.value)}
           required
         />
         <TextField
           id="outlined-date-input"
-          label=""
           type="date"
           sx={{
-            width: '640px'
+            width: '640px',
           }}
           onChange={e => setDate(e.target.value)}
-          required
-        />
-        <TextField
-          id="outlined-society-input"
-          label="Société"
-          type="text"
-          sx={{
-            width: '640px'
-          }}
-          onChange={e => setSociety(e.target.value)}
-          required
-        />
-        <TextField
-          id="outlined-participant-input"
-          label="Participant"
-          type="Text"
-          sx={{
-            width: '640px'
-          }}
-          onChange={e => setParticipant(e.target.value)}
           required
         />
         <TextField
@@ -112,70 +136,95 @@ const NewHunt = () => {
           multiline
           rows={3}
           sx={{
-            width: '1300px'
+            width: '1300px',
           }}
           onChange={e => setDescription(e.target.value)}
           required
         />
 
-
-
         <Stack
-            component="form"
-            sx={{
-                width: '1300px',
-                textAlign: 'center',
-              }}
-            spacing={{ xs: 1, sm: 2 }} direction="row" useFlexGap flexWrap="wrap"
-            noValidate
-            autoComplete="off"
+          component="form"
+          sx={{
+            width: '1300px',
+            textAlign: 'center',
+          }}
+          spacing={{ xs: 1, sm: 2 }}
+          direction="row"
+          useFlexGap
+          flexWrap="wrap"
+          noValidate
+          autoComplete="off"
         >
-            <TextField
-              id="outlined-select-specie-input"
-              label="Espèce"
-              type="Text"
-              sx={{
-                width: '300px'
-              }}
-              onChange={e => setSpecie(e.target.value)}
-              required
-            />
-            <TextField
-              id="outlined-number-input"
-              label="Nombre "
-              type="number"
-              sx={{
-                width: '300px'
-              }}
-              InputProps={{
-                inputProps: { 
-                    max: 1000, min: 0 
-                }
+          <TextField
+            id="outlined-select-specie-input"
+            label="Espèce"
+            type="Text"
+            sx={{
+              width: '300px',
             }}
-              onChange={e => setNumber(e.target.value)}
-              required
-            />
-            <Button onClick={addToRows} variant="contained" style={{backgroundColor: '#8D664C'}} sx={{width: '300px'}}>
-              Ajouter
-            </Button>
+            value={state.animal}
+            onChange={(e) => setState((prev) => ({ ...prev, animal: e.target.value }))}
+            required
+          />
+          <TextField
+            id="outlined-number-input"
+            label="Nombre"
+            type="number"
+            sx={{
+              width: '300px',
+            }}
+            value={state.number}
+            InputProps={{
+              inputProps: {
+                max: 1000, min: 0,
+              },
+            }}
+            onChange={(e) => setState((prev) => ({ ...prev, number: e.target.value }))}
+            required
+          />
+          <Button onClick={addToRows} variant="contained" style={{ backgroundColor: '#8D664C' }} sx={{ width: '300px' }}>
+            Ajouter
+          </Button>
         </Stack>
 
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                {columns.map((column) => (
+                  <TableCell key={column.field} align="left" style={{ minWidth: column.flex }}>
+                    {column.headerName}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {state.rows
+                .slice(state.page * state.limit, state.page * state.limit + state.limit)
+                .map((row) => (
+                  <TableRow key={row.id}>
+                    {columns.map((column) => (
+                      <TableCell key={column.field} align="left">
+                        {column.renderCell ? column.renderCell(row) : row[column.field]}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
 
+        <TablePagination
+          rowsPerPageOptions={[10]}
+          component="div"
+          count={state.rows.length}
+          rowsPerPage={state.limit}
+          page={state.page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
 
-        <DataGrid
-                rows={rows}
-                columns={columns}
-                initialState={{
-                  pagination: {
-                    paginationModel: {
-                      pageSize: 10,
-                    },
-                  },
-                }}
-                pageSizeOptions={[10]}
-                disableRowSelectionOnClick
-            />
-        <Button variant="contained" type="submit" style={{backgroundColor: '#8D664C'}} sx={{width: '1300px'}}>
+        <Button variant="contained" type="submit" onClick={post} style={{ backgroundColor: '#8D664C' }} sx={{ width: '1300px' }}>
           Enregistrer
         </Button>
       </Stack>

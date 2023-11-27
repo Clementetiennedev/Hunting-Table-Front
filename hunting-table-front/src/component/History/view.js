@@ -44,7 +44,7 @@ const HuntDetails = () => {
     const deleteHunt = () => {
         HuntingTableService.deleteHunt(id)
             .then(() => {
-                navigate('/hunt');
+                navigate('/history');
             })
             .catch((error) => {
                 console.log(error);
@@ -82,14 +82,6 @@ const HuntDetails = () => {
                         </p>
                         <p>
                             <b>Description :</b> {hunt.description}
-                        </p>
-                        <p>
-                            <b>Participant :</b>
-                            {/* {hunt.participant.map((params) => {       
-                                return (
-                                <p key={params} value={params}>Name : {params.name}</p>
-                                ) 
-                            })} */}
                         </p>
                     </CardContent>
                 </Card>

@@ -12,7 +12,6 @@ import HuntingTableService from '../../service/HuntingTableService';
 const columns = [
     {field: 'id', headerName: 'Numéro de société', flex: 1},
     {field: 'name', headerName: 'Nom', flex: 1},
-    {field: 'dept', headerName: 'Département', flex: 1},
     {field: 'details', headerName: 'Details', sortable: false, renderCell: (cellValue) => {
         return <IconButton aria-label="details"
                            color="primary"
@@ -31,7 +30,6 @@ const DEFAULT_STATE = {
     availableSocieties: [],
     id: '',
     name: '',
-    dept: '',
 };
 
 class Societe extends React.Component {
@@ -58,10 +56,6 @@ class Societe extends React.Component {
 
     updateName = (model) => {
         this.setState({name: model.target.value});
-    }
-
-    updateDept = (model) => {
-        this.setState({dept: model.target.value});
     }
 
     updateData = () => {
@@ -104,7 +98,7 @@ class Societe extends React.Component {
                         marginTop: '8%',
                     }}>Recherche de société</h2>
                 </div>
-                    <FormControl sx={{my: 1, mx: 0.5, width: 325}}>
+                    <FormControl sx={{my: 1, mx: 0.5, width: 505}}>
                         <TextField 
                           id="outlined-search"
                           label="Numéro société"
@@ -114,23 +108,13 @@ class Societe extends React.Component {
                           />
                     </FormControl>
 
-                    <FormControl sx={{my: 1, mx: 0.5, width: 325}}>
+                    <FormControl sx={{my: 1, mx: 0.5, width: 505}}>
                     <TextField 
                           id="outlined-search"
                           label="Nom"
                           type="search"
                           value={this.state.name}
                           onChange={this.updateName}
-                          />
-                    </FormControl>
-
-                    <FormControl sx={{my: 1, mx: 0.5, width: 325}}>
-                    <TextField 
-                          id="outlined-search"
-                          label="Département"
-                          type="search"
-                          value={this.state.dept}
-                          onChange={this.updateDept}
                           />
                     </FormControl>
 

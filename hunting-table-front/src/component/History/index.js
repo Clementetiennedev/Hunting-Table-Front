@@ -23,7 +23,7 @@ const columns = [
 const DEFAULT_STATE = {
     loading: false,
     limit: 100,
-    page: 1,
+    page: 0,
     hunts: [],
     availableHunts: [],
 };
@@ -35,9 +35,7 @@ class HistoriqueDesChasses extends React.Component {
         this.setState({ loading: true }, () => {
             HuntingTableService.getHuntsForCurrentUser()
               .then((res) => {
-                  console.log('Réponse de la requête API:', res.data);
                   const hunts = Array.isArray(res.data.data) && res.data.data.length > 0 ? res.data.data[0] : [];
-                console.log('Hunts:', hunts);
                 this.setState({ hunts, loading: false });
               })
               .catch((error) => {

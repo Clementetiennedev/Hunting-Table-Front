@@ -3,6 +3,7 @@ import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Stack from '@mui/material/Stack';
 import HuntingTableService from '../service/HuntingTableService';
+import { useNavigate } from 'react-router';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, TextField, Button } from '@mui/material';
 
 const DEFAULT_STATE = {
@@ -14,6 +15,7 @@ const DEFAULT_STATE = {
 };
 
 const NewHunt = () => {
+  const navigate = useNavigate();
   const [state, setState] = useState(DEFAULT_STATE);
   const [title, setTitle] = useState();
   const [date, setDate] = useState();
@@ -37,13 +39,6 @@ const NewHunt = () => {
       }));
     }
   };
-  
-const handleDeleteRow = (animal) => {
-  console.log('Deleting row with species:', animal);
-  const updatedRows = state.rows.filter((row) => row.animal !== animal);
-  console.log('Updated rows:', updatedRows);
-  setState((prev) => ({ ...prev, rows: updatedRows }));
-};
 
   const handleChangePage = (event, newPage) => {
     setState((prev) => ({ ...prev, page: newPage }));
@@ -54,16 +49,19 @@ const handleDeleteRow = (animal) => {
     setState((prev) => ({ ...prev, limit: newLimit, page: 0 }));
   };
 
-  const post = async (event) => {
+  const postHunt = async (event) => {
     event.preventDefault();
   
     try {
-      const response = await  HuntingTableService.poststore(
+      const response = await  HuntingTableService.postHunt(
         title,
         date,
         description,
         state.rows
-      );
+      )
+      if (response.status === 200) {
+        navigate('/history');
+      }
     } catch (error) {
       console.error("Erreur lors de la requête", error);
     }
@@ -72,20 +70,6 @@ const handleDeleteRow = (animal) => {
   const columns = [
     { field: 'animal', headerName: 'Espèce chassée', flex: 1 },
     { field: 'number', headerName: 'Nombre d\'animaux prélevés', flex: 1 },
-    {
-      field: 'details',
-      headerName: 'Supprimer',
-      sortable: false,
-      renderCell: (params) => {
-        console.log('Rendering cell for row:', params.row);
-        return (
-          <IconButton onClick={() => handleDeleteRow(params.row && params.row.animal)}>
-          <DeleteIcon />
-        </IconButton>
-        );
-      },
-      
-    },
   ];
   
 
@@ -224,7 +208,7 @@ const handleDeleteRow = (animal) => {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
 
-        <Button variant="contained" type="submit" onClick={post} style={{ backgroundColor: '#8D664C' }} sx={{ width: '1300px' }}>
+        <Button variant="contained" type="submit" onClick={postHunt} style={{ backgroundColor: '#8D664C' }} sx={{ width: '1300px' }}>
           Enregistrer
         </Button>
       </Stack>

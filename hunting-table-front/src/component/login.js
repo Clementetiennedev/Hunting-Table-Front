@@ -16,8 +16,8 @@ const Login = () => {
       .then((response) => {
         if (response.status === 200) {
           localStorage.setItem('token', response.data.access_token);
-          console.log('Token après la connexion:', response.data.access_token);
-          navigate('/history');
+          navigate('/');
+          window.location.reload();
         } else {
           console.log('Erreur lors de l\'enregistrement du compte');
         }

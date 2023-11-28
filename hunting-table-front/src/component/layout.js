@@ -12,13 +12,11 @@ import PublicIcon from '@mui/icons-material/Public';
 import { Link } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import HuntingTableService from '../service/HuntingTableService';
-// import { useNavigate } from 'react-router';
 
-const pages = ['Société', 'Historique des chasses', 'Nouvelle Chasse' ];
-const pagesLinks = ['society', 'history', 'new-hunt', 'login', 'register'];
+const pages = ['Société', 'Historique des chasses', 'Nouvelle Chasse', 'Ma Société' ];
+const pagesLinks = ['society', 'history', 'new-hunt', 'mysociety'];
 const pagesNotLog = [ 'Connexion', 'Inscription' ];
 const pagesLinksNotLog = [ 'login', 'register'];
-// const navigate = useNavigate();
 
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -32,10 +30,25 @@ function ResponsiveAppBar() {
   };
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [roleId, setRoleId] = useState('');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     setIsAuthenticated(!!token);
+    if (!!token) {
+      try {
+        HuntingTableService.me()
+        .then((res) => {
+          setRoleId(res.data.role_id);
+          console.log(res.data.role_id)
+        })          
+        .catch((error) => {
+          console.log(error);
+        });
+      } catch (error) {
+        console.error('Erreur lors de la récupération des données de l\'utilisateur', error);
+      }
+    }
   }, []); 
 
   const handleLogout = () => {
@@ -45,7 +58,6 @@ function ResponsiveAppBar() {
       if (response.status === 200) {
         localStorage.removeItem('token');
         setIsAuthenticated(false);
-        //navigate('/')
         window.location.reload(); 
       } else {
         console.log('Erreur lors de la déconnexion');
@@ -116,6 +128,8 @@ function ResponsiveAppBar() {
                   </Typography>
                 </MenuItem>
               )),
+              
+
               <Button
               onClick={handleLogout}
               sx={{ my: 2, color: 'white', display: 'block' }}

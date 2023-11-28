@@ -15,20 +15,12 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 
-function createData(title, date) {
-    return { title, date };
-  }
-  
-  const rows = [
-    createData('Sanglier', '10/11/2023'),
-    createData('Chevreuil', '10/11/2023'),
-  ];
-
 const HuntDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [hunt, setHunt] = useState(null);
+    const [kills, setKills] = useState([]);
 
     useEffect(() => {
         HuntingTableService.getHunt(id)
@@ -39,6 +31,10 @@ const HuntDetails = () => {
             .catch((error) => {
                 console.log(error);
             });
+
+        HuntingTableService.getKillByHuntId(id)
+        .then(response => setKills(response.data.kills))
+        .catch(error => console.error('Error fetching seasons:', error));
     }, [id]);
 
     const deleteHunt = () => {
@@ -89,8 +85,8 @@ const HuntDetails = () => {
                 <div>       
                     <h3>Tableau de chasse</h3>
                 </div>
-                <TableContainer sx={{ maxWidth: 450 }} component={Card}>
-                <Table sx={{ maxWidth: 450 }} aria-label="simple table">
+                <TableContainer sx={{ maxWidth: 850 }} component={Card}>
+                <Table sx={{ maxWidth: 850 }} aria-label="simple table">
                   <TableHead>
                     <TableRow>
                       <TableCell>Espèce</TableCell>
@@ -98,15 +94,15 @@ const HuntDetails = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {rows.map((row) => (
+                    {kills.map((row) => (
                       <TableRow
                         key={row.name}
                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                       >
                         <TableCell component="th" scope="row">
-                          {row.title}
+                          {row.animal}
                         </TableCell>
-                        <TableCell>{row.date}</TableCell>
+                        <TableCell>{row.number}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

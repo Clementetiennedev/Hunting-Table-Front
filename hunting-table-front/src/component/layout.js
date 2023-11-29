@@ -9,17 +9,18 @@ import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import PublicIcon from '@mui/icons-material/Public';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import HuntingTableService from '../service/HuntingTableService';
 
-const pages = ['Société', 'Historique des chasses', 'Nouvelle Chasse', 'Ma Société' ];
-const pagesLinks = ['society', 'history', 'new-hunt', 'mysociety'];
+const pages = ['Société', 'Historique des chasses', 'Nouvelle Chasse' ];
+const pagesLinks = ['society', 'history', 'new-hunt'];
 const pagesNotLog = [ 'Connexion', 'Inscription' ];
 const pagesLinksNotLog = [ 'login', 'register'];
 
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
+  const navigate = useNavigate();
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -121,29 +122,35 @@ function ResponsiveAppBar() {
               }}
             >
               {isAuthenticated ? (
-              pages.map((page, index) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">
-                    <Link style={{ textDecoration: "none", color: "white" }} to={`/${pagesLinks[index]}`}>{page}</Link>
-                  </Typography>
-                </MenuItem>
-              )),
-              
-
+                pages.map((page, index) => (
+                  <MenuItem key={page} onClick={handleCloseNavMenu}>
+                    <Typography textAlign="center">
+                      <Link style={{ textDecoration: "none", color: "white" }} to={`/${pagesLinks[index]}`}>{page}</Link>
+                    </Typography>
+                  </MenuItem>
+                )),
+                <Button
+                  onClick={handleLogout}
+                  sx={{ my: 2, color: 'white', display: 'block' }}
+                >
+                  Logout
+                </Button>
+              ) : (
+                pagesNotLog.map((page, index) => (
+                  <MenuItem key={page} onClick={handleCloseNavMenu}>
+                    <Typography textAlign="center">
+                      <Link style={{ textDecoration: "none", color: "white" }} to={`/${pagesLinksNotLog[index]}`}>{page}</Link>
+                    </Typography>
+                  </MenuItem>
+                ))
+              )}
+            {roleId === 3 && isAuthenticated && (
               <Button
-              onClick={handleLogout}
-              sx={{ my: 2, color: 'white', display: 'block' }}
-            >
-              Logout
-            </Button>
-            ) : (
-              pagesNotLog.map((page, index) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">
-                    <Link style={{ textDecoration: "none", color: "white" }} to={`/${pagesLinksNotLog[index]}`}>{page}</Link>
-                  </Typography>
-                </MenuItem>
-              ))
+                onClick={() => navigate('/quota')}
+                sx={{ my: 2, color: 'white', display: 'block' }}
+              >
+                Votre Bouton
+              </Button>
             )}
           </Menu>
           </Box>
@@ -194,6 +201,14 @@ function ResponsiveAppBar() {
                   <Link style={{ textDecoration: "none", color: "white" }} to={`/${pagesLinksNotLog[index]}`}>{page}</Link>
                 </Button>
               ))
+            )}
+            {roleId === 3 && isAuthenticated && (
+              <Button
+                onClick={() => navigate('/quota')}
+                sx={{ my: 2, color: 'white', display: 'block' }}
+              >
+                Quota
+              </Button>
             )}
           </Box>
         </Toolbar>

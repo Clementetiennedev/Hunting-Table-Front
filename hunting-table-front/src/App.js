@@ -1,24 +1,56 @@
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react';
+import { Route, Routes, Navigate } from 'react-router-dom';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from './theme';
+import ResponsiveAppBar from './component/layout';
+import Home from './component/home';
+import Society from './component/Society/index';
+import SocietyView from './component/Society/view';
+import Quota from './component/Quota/view';
+import Login from './component/login';
+import Register from './component/register';
+import History from './component/History/index';
+import HistoryView from './component/History/view';
+import NewHunt from './component/new-hunt';
 import './App.css';
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsAuthenticated(!!token);
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={theme}>
+      <div className="App">
+        <ResponsiveAppBar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          {isAuthenticated ? (
+            <>
+              <Route path="Society" element={<Society />} />
+              <Route path="Society/:id" element={<SocietyView />} />
+              <Route path="History" element={<History />} />
+              <Route path="History/:id" element={<HistoryView />} />
+              <Route path="New-hunt" element={<NewHunt />} />
+              <Route path="Quota" element={<Quota />} />
+            </>
+          ) : (
+            <>
+              <Route path="Login" element={<Login />} />
+              <Route path="Register" element={<Register />} />
+              {/* Redirect to Home if not authenticated */}
+              <Route
+                path="*"
+                element={<Navigate to="/" replace />}
+              />
+            </>
+          )}
+        </Routes>
+      </div>
+    </ThemeProvider>
   );
 }
 
